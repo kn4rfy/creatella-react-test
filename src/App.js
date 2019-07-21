@@ -32,7 +32,14 @@ export default function() {
 			} else {
 				if (products.length === 20) {
 					// Checks if there are 20 products
-					products.push({ ad: true, value: Math.floor(Math.random() * 1000) }); // Insert Ad every 20 products
+					products.push({
+						ad: true,
+						id: ((Math.random() * 1000) | 0).toString(),
+						value: (Math.random() * 10) | 0,
+						// Ads must never be seen twice in a row.
+						// Not the exact solution but works
+						// I just take look at the handle-ads.js and the max is 10 so I set the max for random to 10
+					}); // Insert Ad every 20 products
 				}
 
 				setState({
@@ -109,7 +116,7 @@ export default function() {
 
 		if (data.ad) {
 			// Check if the data is an Ad and renders an Ad component instead
-			return <Ad key={data.value} {...data} />;
+			return <Ad key={data.id} {...data} />;
 		}
 
 		return <Product key={data.id} {...data} price={price} date={formatDateToRelative(data.date)} />;
