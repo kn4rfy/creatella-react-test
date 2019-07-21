@@ -6,7 +6,14 @@ import Loader from './components/Loader';
 import Product from './components/Product';
 import Ad from './components/Ad';
 
-const productsState = { products: [], page: 1, sort: '', loading: false, noMoreProducts: false };
+const productsState = {
+	products: [],
+	// preLoadedProducts: [],
+	page: 1,
+	sort: '',
+	loading: false,
+	noMoreProducts: false,
+};
 
 export default function() {
 	const [state, setState] = useState(productsState);
@@ -55,6 +62,53 @@ export default function() {
 		});
 	}
 
+	/////////////////////////////////////
+	// Pre-load products to show later //
+	/////////////////////////////////////
+	//
+	// function preLoadProducts() {
+	// 	setState({
+	// 		...state,
+	// 		loading: true, // Show the loading spinner
+	// 	});
+	//
+	// 	request(
+	// 		`http://localhost:3000/products?_page=${state.page}&_limit=20&_sort=${state.sort}`
+	// 	).then(products => {
+	// 		if (products.length === 0) {
+	// 			// Checks if there aro no more products
+	// 			setState({
+	// 				...state,
+	// 				loading: false, // Terminates loading
+	// 				noMoreProducts: true, // Show the end of catalogue text
+	// 			});
+	// 		} else {
+	// 			if (products.length === 20) {
+	// 				// Checks if there are 20 products
+	// 				products.push({
+	// 					ad: true,
+	// 					id: ((Math.random() * 1000) | 0).toString(),
+	// 					value: (Math.random() * 10) | 0,
+	// 					// Ads must never be seen twice in a row.
+	// 					// Not the exact solution but works
+	// 					// I just take look at the handle-ads.js and the max is 10 so I set the max for random to 10
+	// 				}); // Insert Ad every 20 products
+	// 			}
+	//
+	// 			setState({
+	// 				...state,
+	// 				preLoadedProducts: update(state.preLoadedProducts, {
+	// 					// Push the result products to the products state
+	// 					$push: products,
+	// 				}),
+	// 				page: (state.page += 1),
+	// 				loading: false, // Show the loading spinner
+	// 			});
+	// 		}
+	// 	});
+	// }
+	/////////////////////////////////////
+
 	// Called when scrolling the page
 	function onScroll(data) {
 		if (
@@ -63,6 +117,29 @@ export default function() {
 			!state.noMoreProducts // Stops getting more if end of catalogue is reached
 		) {
 			getProducts();
+
+			//////////////////////////////////////////////////////////////////
+			// Checks when scroll reached end ana show pre-loaded products  //
+			//////////////////////////////////////////////////////////////////
+			// Unfixed issue: Stuttering upon inserting pre-loaded products //
+			//////////////////////////////////////////////////////////////////
+			//
+			// 	if (state.preLoadedProducts.length === 0) {
+			// 		preLoadProducts();
+			// 	}
+			// } else if (
+			// 	data.target.offsetHeight + data.target.scrollTop ===
+			// 	data.target.scrollHeight // Triggered when scrolling reach the end
+			// ) {
+			// 	setState({
+			// 		...state,
+			// 		products: update(state.products, {
+			// 			// Push the result products to the products state
+			// 			$push: state.preLoadedProducts,
+			// 		}),
+			// 		preLoadProducts: [],
+			// 	});
+			/////////////////////////////////////////////////////////////////
 		}
 	}
 
@@ -72,8 +149,11 @@ export default function() {
 		// Update state.sort and trigger useEffect() to call getProducts()
 		setState({
 			products: [],
+			// preLoadedProducts: [],
 			page: 1,
 			sort: event.target.value,
+			loading: false,
+			noMoreProducts: false,
 		});
 	}
 
