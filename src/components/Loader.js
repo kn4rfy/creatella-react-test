@@ -11,7 +11,6 @@ export default function(props) {
 }
 
 const Div = styled.div`
-	width: 100%;
 	padding: 32px;
 
 	.loader {
